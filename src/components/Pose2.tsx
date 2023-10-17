@@ -17,11 +17,18 @@ import {
   FilesetResolver,
   DrawingUtils,
 } from "@mediapipe/tasks-vision";
+
 import { useState, useRef, useEffect } from "react";
 
 //===== Config tsconfig.json: "moduleResolution": "node",
 
-const run = (setX: any, setY: any) => {
+const run = (
+  setX: any,
+  setY: any,
+  webcamBtn: any,
+  webcamRef: any,
+  canvasRef: any
+) => {
   let poseLandmarker: any = undefined;
   let runningMode: any = "IMAGE";
   let enableWebcamButton: any;
@@ -49,10 +56,13 @@ const run = (setX: any, setY: any) => {
 
   createPoseLandmarker();
 
-  const video = document.getElementById("webcam") as HTMLVideoElement;
-  const canvasElement = document.getElementById(
-    "output_canvas"
-  ) as HTMLCanvasElement;
+  // const video = document.getElementById("webcam") as HTMLVideoElement;
+  // const canvasElement = document.getElementById(
+  //   "output_canvas"
+  // ) as HTMLCanvasElement;
+  const video = webcamRef.current as HTMLVideoElement;
+  const canvasElement = canvasRef.current as HTMLCanvasElement;
+
   const canvasCtx: any = canvasElement?.getContext("2d");
   const drawingUtils = new DrawingUtils(canvasCtx);
 
@@ -62,7 +72,8 @@ const run = (setX: any, setY: any) => {
   // If webcam supported, add event listener to button for when user
   // wants to activate it.
   if (hasGetUserMedia()) {
-    enableWebcamButton = document.getElementById("webcamButton");
+    //enableWebcamButton = document.getElementById("webcamButton");
+    enableWebcamButton = webcamBtn.current;
     enableWebcamButton?.addEventListener("click", enableCam);
   } else {
     console.warn("getUserMedia() is not supported by your browser");
@@ -107,6 +118,7 @@ const run = (setX: any, setY: any) => {
     video.style.height = videoHeight;
     canvasElement.style.width = videoWidth;
     video.style.width = videoWidth;
+
     // Now let's start detecting the stream.
     if (runningMode === "IMAGE") {
       runningMode = "VIDEO";
@@ -157,6 +169,9 @@ const Pose2 = () => {
   const [x, setX] = useState<number>(0);
   const [y, sety] = useState<number>(0);
 
+  const webcamRef = useRef<any>(null);
+  const canvasRef = useRef<any>(null);
+
   useEffect(() => {
     if (webcamBtn.current.innerText === "ENABLE WEBCAM") {
       setTimeout(() => {
@@ -167,7 +182,7 @@ const Pose2 = () => {
 
   useEffect(() => {
     if (webcamBtn !== undefined) {
-      run(setX, sety);
+      run(setX, sety, webcamBtn, webcamRef, canvasRef);
     }
   }, [webcamBtn]);
 
@@ -185,12 +200,14 @@ const Pose2 = () => {
       </button>
       <div style={{ position: "relative" }}>
         <video
+          ref={webcamRef}
           id="webcam"
           style={{ width: "1280px", height: "720px", position: "absolute" }}
           autoPlay
           playsInline
         ></video>
         <canvas
+          ref={canvasRef}
           className="output_canvas"
           id="output_canvas"
           width="1280"
