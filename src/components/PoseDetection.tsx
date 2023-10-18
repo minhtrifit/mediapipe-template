@@ -21,9 +21,7 @@ import {
 import { useState, useRef, useEffect } from "react";
 import Lottie, { LottieRefCurrentProps } from "lottie-react";
 import poseAnimation from "../assets/pose-animation.json";
-import { checkPostEx1Detection } from "../helper/helper";
-
-let ex1Reps = 0;
+import { checkPostEx1Detection, checkPostEx2Detection } from "../helper/helper";
 
 //===== Config tsconfig.json: "moduleResolution": "node",
 
@@ -33,8 +31,8 @@ const run = (
   webcamBtn: any,
   webcamRef: any,
   canvasRef: any,
-  poseEx1reps: any,
-  setPoseEx1reps: any
+  setPoseEx1reps: any,
+  setPoseEx2reps: any
 ) => {
   let poseLandmarker: any = undefined;
   let runningMode: any = "IMAGE";
@@ -119,6 +117,10 @@ const run = (
   }
 
   let lastVideoTime = -1;
+  let reps1 = 0;
+  let reps2 = 0;
+  let frame1 = 0;
+  let frame2 = 0;
 
   async function predictWebcam() {
     canvasElement.style.height = videoHeight;
@@ -160,9 +162,26 @@ const run = (
           const checkPostEx1Reps: boolean =
             checkPostEx1Detection(landmarksArray);
 
+          const checkPostEx2Reps: boolean =
+            checkPostEx2Detection(landmarksArray);
+
+          frame1 = frame1 + 1;
+          frame2 = frame2 + 1;
+
           if (checkPostEx1Reps === true) {
-            ex1Reps++;
-            setPoseEx1reps(ex1Reps);
+            if (frame1 > 20) {
+              frame1 = 0;
+              reps1 = reps1 + 1;
+              setPoseEx1reps(reps1);
+            }
+          }
+
+          if (checkPostEx2Reps === true) {
+            if (frame2 > 20) {
+              frame2 = 0;
+              reps2 = reps2 + 1;
+              setPoseEx2reps(reps2);
+            }
           }
         }
 
@@ -208,8 +227,8 @@ const PoseDetection = () => {
         webcamBtn,
         webcamRef,
         canvasRef,
-        poseEx1reps,
-        setPoseEx1reps
+        setPoseEx1reps,
+        setPoseEx2reps
       );
     }
   }, [webcamBtn, poseEx1reps]);
@@ -287,26 +306,44 @@ const PoseDetection = () => {
           justifyContent: "center",
         }}
       >
-        <p style={{ fontSize: "30px", fontWeight: "bold" }}>
+        <p
+          style={{
+            fontSize: "30px",
+            fontWeight: "bold",
+            marginBottom: "50px",
+          }}
+        >
           Try some detection
         </p>
         {webcamBtn !== null && (
           <>
-            <div style={{ display: "flex", alignItems: "center" }}>
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column-reverse",
+                alignItems: "center",
+              }}
+            >
               <img
                 alt="pose_ex1"
                 style={{ width: "300px" }}
                 src="./pose/pose_ex1.png"
               />
-              <p style={{ fontSize: "30px" }}>Reps: {poseEx1reps}</p>
+              <p style={{ fontSize: "35px" }}>Reps: {poseEx1reps}</p>
             </div>
-            <div style={{ display: "flex", alignItems: "center" }}>
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column-reverse",
+                alignItems: "center",
+              }}
+            >
               <img
                 alt="pose_ex1"
                 style={{ width: "300px" }}
                 src="./pose/pose_ex2.png"
               />
-              <p style={{ fontSize: "30px" }}>Reps: {poseEx2reps}</p>
+              <p style={{ fontSize: "35px" }}>Reps: {poseEx2reps}</p>
             </div>
           </>
         )}

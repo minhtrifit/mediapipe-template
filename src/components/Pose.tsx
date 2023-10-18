@@ -5,18 +5,15 @@ import "@tensorflow/tfjs-backend-webgl";
 
 import { drawKeypoints, drawSkeleton } from "../utils/posenet";
 
-const getDistance = (x1: number, x2: number, y1: number, y2: number) => {
-  const a = x1 - x2;
-  const b = y1 - y2;
-
-  return Math.floor(Math.sqrt(a * a + b * b));
-};
+import { getDistance } from "../helper/helper";
 
 const Pose = () => {
   const webcamRef = useRef<any>(null);
   const canvasRef = useRef<any>(null);
 
-  const [countFrame, setCountFrame] = useState<number>(0);
+  let countFrame = 0;
+
+  //const [countFrame, setCountFrame] = useState<number>(0);
   const [completed, setCompleted] = useState<number>(0);
 
   let reps = 0;
@@ -59,7 +56,7 @@ const Pose = () => {
       const leftAbs = pose.keypoints[11];
       const rightAbs = pose.keypoints[12];
 
-      drawCanvas(pose, video, videoWidth, videoHeight, canvasRef);
+      drawCanvas(pose, videoWidth, videoHeight, canvasRef);
 
       const lx = Math.floor(Math.floor(leftHand.position.x));
       const ly = Math.floor(Math.floor(leftHand.position.y));
@@ -76,7 +73,7 @@ const Pose = () => {
 
       if (distanceH / distanceA > 5) {
         frame = frame + 1;
-        setCountFrame(frame);
+        countFrame++;
       }
 
       if (frame > 20) {
@@ -89,7 +86,6 @@ const Pose = () => {
 
   const drawCanvas = (
     pose: any,
-    video: any,
     videoWidth: any,
     videoHeight: any,
     canvas: any
