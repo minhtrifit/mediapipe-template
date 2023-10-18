@@ -145,13 +145,18 @@ const run = (
 
         for (const landmark of result.landmarks) {
           drawingUtils.drawLandmarks(landmark, {
+            color: "#e02a1d",
             radius: (data: any) =>
               DrawingUtils.lerp(data.from!.z, -0.15, 0.1, 5, 1),
           });
 
           drawingUtils.drawConnectors(
             landmark,
-            PoseLandmarker.POSE_CONNECTIONS
+            PoseLandmarker.POSE_CONNECTIONS,
+            {
+              color: "#34ed3a",
+              lineWidth: 8,
+            }
           );
 
           const landmarksArray = result.landmarks[0];
@@ -243,7 +248,6 @@ const PoseDetection = () => {
         width: "100%",
         display: "flex",
         justifyContent: "center",
-        marginTop: "50px",
         gap: 200,
       }}
     >
