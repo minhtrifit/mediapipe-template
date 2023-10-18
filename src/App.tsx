@@ -1,8 +1,6 @@
 import "./App.css";
 
-// import Plant from "./components/plant";
-// import Pose from "./components/Pose";
-import Pose2 from "./components/Pose2";
+import PoseDetection from "./components/PoseDetection";
 
 const App = () => {
   return (
@@ -11,7 +9,7 @@ const App = () => {
         display: "flex",
       }}
     >
-      <Pose2 />
+      <PoseDetection />
     </div>
   );
 };

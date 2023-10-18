@@ -19,6 +19,8 @@ import {
 } from "@mediapipe/tasks-vision";
 
 import { useState, useRef, useEffect } from "react";
+import Lottie, { LottieRefCurrentProps } from "lottie-react";
+import poseAnimation from "../assets/pose-animation.json";
 
 //===== Config tsconfig.json: "moduleResolution": "node",
 
@@ -164,13 +166,18 @@ const run = (
   }
 };
 
-const Pose2 = () => {
+const PoseDetection = () => {
   const webcamBtn = useRef<any>();
   const [x, setX] = useState<number>(0);
   const [y, sety] = useState<number>(0);
 
   const webcamRef = useRef<any>(null);
   const canvasRef = useRef<any>(null);
+
+  const [poseEx1reps, setPoseEx1reps] = useState<number>(0);
+  const [poseEx2reps, setPoseEx2reps] = useState<number>(0);
+
+  const poseAnimationRef = useRef<LottieRefCurrentProps>(null);
 
   useEffect(() => {
     if (webcamBtn.current.innerText === "ENABLE WEBCAM") {
@@ -186,41 +193,105 @@ const Pose2 = () => {
     }
   }, [webcamBtn]);
 
+  const handleComplete = () => {
+    // console.log("Completed!");
+  };
+
   return (
-    <div>
-      <button
-        ref={webcamBtn}
-        id="webcamButton"
-        className="mdc-button mdc-button--raised"
-        hidden
+    <div
+      style={{
+        width: "100%",
+        display: "flex",
+        justifyContent: "center",
+        marginTop: "50px",
+        gap: 200,
+      }}
+    >
+      <div
+        className="main-left"
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+        }}
       >
-        {/* <span className="mdc-button__ripple"></span> */}
-        {/* <span className="mdc-button__label">ENABLE WEBCAM</span> */}
-        ENABLE WEBCAM
-      </button>
-      <div style={{ position: "relative" }}>
-        <video
-          ref={webcamRef}
-          id="webcam"
-          style={{ width: "1280px", height: "720px", position: "absolute" }}
-          autoPlay
-          playsInline
-        ></video>
-        <canvas
-          ref={canvasRef}
-          className="output_canvas"
-          id="output_canvas"
-          width="1280"
-          height="720"
-          style={{ position: "absolute", left: "0px", top: "0px" }}
-        ></canvas>
+        <div style={{ display: "flex", alignItems: "center" }}>
+          <Lottie
+            style={{ width: "200px" }}
+            animationData={poseAnimation}
+            onLoopComplete={() => {
+              handleComplete();
+            }}
+            lottieRef={poseAnimationRef}
+          />
+          <p style={{ fontSize: "50px", fontWeight: "bold" }}>Pose Detection</p>
+        </div>
+        <button
+          ref={webcamBtn}
+          id="webcamButton"
+          className="mdc-button mdc-button--raised"
+          hidden
+        >
+          {/* <span className="mdc-button__ripple"></span> */}
+          {/* <span className="mdc-button__label">ENABLE WEBCAM</span> */}
+          ENABLE WEBCAM
+        </button>
+        <div style={{ position: "relative" }}>
+          <video
+            ref={webcamRef}
+            id="webcam"
+            // style={{ width: "1280px", height: "720px" }}
+            autoPlay
+            playsInline
+          ></video>
+          <canvas
+            ref={canvasRef}
+            className="output_canvas"
+            id="output_canvas"
+            width="1280"
+            height="720"
+            style={{ position: "absolute", left: "0px", top: "0px" }}
+          ></canvas>
+        </div>
+        <div style={{ marginTop: "50px" }}>
+          <p style={{ fontSize: "50px", fontWeight: "bold" }}>X: {x}</p>
+          <p style={{ fontSize: "50px", fontWeight: "bold" }}>Y: {y}</p>
+        </div>
       </div>
-      <div style={{ marginTop: "400px" }}>
-        <p style={{ fontSize: "80px", fontWeight: "bold" }}>X: {x}</p>
-        <p style={{ fontSize: "80px", fontWeight: "bold" }}>Y: {y}</p>
+      <div
+        className="main-right"
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "center",
+        }}
+      >
+        <p style={{ fontSize: "30px", fontWeight: "bold" }}>
+          Try some detection
+        </p>
+        {webcamBtn !== null && (
+          <>
+            <div style={{ display: "flex", alignItems: "center" }}>
+              <img
+                alt="pose_ex1"
+                style={{ width: "300px" }}
+                src="./pose/pose_ex1.png"
+              />
+              <p style={{ fontSize: "25px" }}>Reps: {poseEx1reps}</p>
+            </div>
+            <div style={{ display: "flex", alignItems: "center" }}>
+              <img
+                alt="pose_ex1"
+                style={{ width: "300px" }}
+                src="./pose/pose_ex2.png"
+              />
+              <p style={{ fontSize: "25px" }}>Reps: {poseEx2reps}</p>
+            </div>
+          </>
+        )}
       </div>
     </div>
   );
 };
 
-export default Pose2;
+export default PoseDetection;
