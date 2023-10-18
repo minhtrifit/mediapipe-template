@@ -21,6 +21,9 @@ import {
 import { useState, useRef, useEffect } from "react";
 import Lottie, { LottieRefCurrentProps } from "lottie-react";
 import poseAnimation from "../assets/pose-animation.json";
+import { checkPostEx1Detection } from "../helper/helper";
+
+let ex1Reps = 0;
 
 //===== Config tsconfig.json: "moduleResolution": "node",
 
@@ -29,7 +32,9 @@ const run = (
   setY: any,
   webcamBtn: any,
   webcamRef: any,
-  canvasRef: any
+  canvasRef: any,
+  poseEx1reps: any,
+  setPoseEx1reps: any
 ) => {
   let poseLandmarker: any = undefined;
   let runningMode: any = "IMAGE";
@@ -151,6 +156,14 @@ const run = (
 
           setX(Math.floor(landmarksArray[14].x * 100));
           setY(Math.floor(landmarksArray[14].y * 100));
+
+          const checkPostEx1Reps: boolean =
+            checkPostEx1Detection(landmarksArray);
+
+          if (checkPostEx1Reps === true) {
+            ex1Reps++;
+            setPoseEx1reps(ex1Reps);
+          }
         }
 
         canvasCtx.restore();
@@ -189,9 +202,17 @@ const PoseDetection = () => {
 
   useEffect(() => {
     if (webcamBtn !== undefined) {
-      run(setX, sety, webcamBtn, webcamRef, canvasRef);
+      run(
+        setX,
+        sety,
+        webcamBtn,
+        webcamRef,
+        canvasRef,
+        poseEx1reps,
+        setPoseEx1reps
+      );
     }
-  }, [webcamBtn]);
+  }, [webcamBtn, poseEx1reps]);
 
   const handleComplete = () => {
     // console.log("Completed!");
@@ -277,7 +298,7 @@ const PoseDetection = () => {
                 style={{ width: "300px" }}
                 src="./pose/pose_ex1.png"
               />
-              <p style={{ fontSize: "25px" }}>Reps: {poseEx1reps}</p>
+              <p style={{ fontSize: "30px" }}>Reps: {poseEx1reps}</p>
             </div>
             <div style={{ display: "flex", alignItems: "center" }}>
               <img
@@ -285,7 +306,7 @@ const PoseDetection = () => {
                 style={{ width: "300px" }}
                 src="./pose/pose_ex2.png"
               />
-              <p style={{ fontSize: "25px" }}>Reps: {poseEx2reps}</p>
+              <p style={{ fontSize: "30px" }}>Reps: {poseEx2reps}</p>
             </div>
           </>
         )}
