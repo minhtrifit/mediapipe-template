@@ -156,8 +156,8 @@ const run = (
 
           const landmarksArray = result.landmarks[0];
 
-          setX(Math.floor(landmarksArray[14].x * 100));
-          setY(Math.floor(landmarksArray[14].y * 100));
+          setX(Math.floor(landmarksArray[0].x * 100));
+          setY(Math.floor(landmarksArray[0].y * 100));
 
           const checkPostEx1Reps: boolean =
             checkPostEx1Detection(landmarksArray);
@@ -264,7 +264,9 @@ const PoseDetection = () => {
             }}
             lottieRef={poseAnimationRef}
           />
-          <p style={{ fontSize: "50px", fontWeight: "bold" }}>Pose Detection</p>
+          <p style={{ fontSize: "50px", fontWeight: "bold", color: "#2b3cb5" }}>
+            Pose Detection
+          </p>
         </div>
         <button
           ref={webcamBtn}
@@ -293,9 +295,21 @@ const PoseDetection = () => {
             style={{ position: "absolute", left: "0px", top: "0px" }}
           ></canvas>
         </div>
-        <div style={{ marginTop: "50px" }}>
-          <p style={{ fontSize: "50px", fontWeight: "bold" }}>X: {x}</p>
-          <p style={{ fontSize: "50px", fontWeight: "bold" }}>Y: {y}</p>
+        <div
+          style={{
+            marginTop: "50px",
+            display: "flex",
+            flexDirection: "column",
+            gap: 10,
+          }}
+        >
+          <p style={{ fontSize: "40px", fontWeight: "bold", color: "#2b3cb5" }}>
+            Landmarks[0] detection:
+          </p>
+          <div>
+            <p style={{ fontSize: "50px", fontWeight: "bold" }}>X: {x}</p>
+            <p style={{ fontSize: "50px", fontWeight: "bold" }}>Y: {y}</p>
+          </div>
         </div>
       </div>
       <div
@@ -311,6 +325,7 @@ const PoseDetection = () => {
             fontSize: "30px",
             fontWeight: "bold",
             marginBottom: "50px",
+            color: "#23ba76",
           }}
         >
           Try some detection
