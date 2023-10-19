@@ -145,7 +145,7 @@ const run = (
 
         for (const landmark of result.landmarks) {
           drawingUtils.drawLandmarks(landmark, {
-            color: "#e02a1d",
+            color: "#FF0000",
             radius: (data: any) =>
               DrawingUtils.lerp(data.from!.z, -0.15, 0.1, 5, 1),
           });
@@ -154,7 +154,7 @@ const run = (
             landmark,
             PoseLandmarker.POSE_CONNECTIONS,
             {
-              color: "#34ed3a",
+              color: "#00FF00",
               lineWidth: 8,
             }
           );

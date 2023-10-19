@@ -26,8 +26,8 @@ const run = (webcamBtn: any, webcamRef: any, canvasRef: any) => {
   let runningMode: any = "IMAGE";
   let enableWebcamButton: any;
   let webcamRunning: boolean = false;
-  const videoHeight: any = "360px";
-  const videoWidth: any = "480px";
+  // const videoHeight: any = "360px";
+  // const videoWidth: any = "480px";
 
   // Before we can use HandLandmarker class we must wait for it to finish
   // loading. Machine Learning models can be large and take a moment to
@@ -66,7 +66,7 @@ const run = (webcamBtn: any, webcamRef: any, canvasRef: any) => {
   // If webcam supported, add event listener to button for when user
   // wants to activate it.
   if (hasGetUserMedia()) {
-    enableWebcamButton = document.getElementById("webcamButton");
+    enableWebcamButton = webcamBtn.current;
     enableWebcamButton.addEventListener("click", enableCam);
   } else {
     console.warn("getUserMedia() is not supported by your browser");
@@ -79,12 +79,9 @@ const run = (webcamBtn: any, webcamRef: any, canvasRef: any) => {
       return;
     }
 
-    if (webcamRunning === true) {
-      webcamRunning = false;
-      enableWebcamButton.innerText = "ENABLE PREDICTIONS";
-    } else {
+    if (webcamRunning === false) {
       webcamRunning = true;
-      enableWebcamButton.innerText = "DISABLE PREDICTIONS";
+      enableWebcamButton.innerText = "WEBCAM ENABLE SUCCESSFULLY";
     }
 
     // getUsermedia parameters.
@@ -103,8 +100,8 @@ const run = (webcamBtn: any, webcamRef: any, canvasRef: any) => {
   let results: any = undefined;
 
   async function predictWebcam() {
-    canvasElement.style.width = videoWidth;
-    canvasElement.style.height = videoHeight;
+    canvasElement.style.width = video.videoWidth.toString();
+    canvasElement.style.height = video.videoHeight.toString();
     canvasElement.width = video.videoWidth;
     canvasElement.height = video.videoHeight;
 
@@ -121,34 +118,31 @@ const run = (webcamBtn: any, webcamRef: any, canvasRef: any) => {
       results = handLandmarker.detectForVideo(video, startTimeMs);
     }
 
-    console.log(results);
-
     canvasCtx.save();
     canvasCtx.clearRect(0, 0, canvasElement.width, canvasElement.height);
 
     if (results.landmarks) {
       for (const landmarks of results.landmarks) {
+        drawingUtils.drawLandmarks(landmarks, {
+          color: "#FF0000", // Red
+        });
+
         drawingUtils.drawConnectors(
           landmarks,
           handLandmarker.HAND_CONNECTIONS,
           {
-            color: "#00FF00",
-            lineWidth: 5,
+            color: "#00FF00", // Green
+            lineWidth: 2,
           }
         );
 
-        drawingUtils.drawLandmarks(landmarks, {
-          color: "#FF0000",
-          lineWidth: 2,
-        });
+        console.log(landmarks);
       }
     }
     canvasCtx.restore();
 
     // Call this function again to keep predicting when the browser is ready.
-    if (webcamRunning === true) {
-      window.requestAnimationFrame(predictWebcam);
-    }
+    window.requestAnimationFrame(predictWebcam);
   }
 };
 
@@ -172,29 +166,72 @@ const HandsDetection = () => {
   }, [webcamBtn]);
 
   return (
-    <div id="liveView" className="videoView">
-      <button
-        ref={webcamBtn}
-        id="webcamButton"
-        className="mdc-button mdc-button--raised"
+    <div
+      style={{
+        width: "100%",
+        display: "flex",
+        justifyContent: "center",
+        gap: 50,
+      }}
+    >
+      <div
+        className="main-left"
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          // alignItems: "center",
+          width: "650px",
+        }}
       >
-        <span className="mdc-button__ripple"></span>
-        <span className="mdc-button__label">ENABLE WEBCAM</span>
-      </button>
-      <div style={{ position: "relative" }}>
-        <video
-          ref={webcamRef}
-          id="webcam"
-          style={{ position: "absolute" }}
-          autoPlay
-          playsInline
-        ></video>
-        <canvas
-          ref={canvasRef}
-          className="output_canvas"
-          id="output_canvas"
-          style={{ position: "absolute", left: "0px", top: "0px" }}
-        ></canvas>
+        <div id="liveView" className="videoView">
+          <button
+            ref={webcamBtn}
+            id="webcamButton"
+            className="mdc-button mdc-button--raised"
+          >
+            <span className="mdc-button__ripple"></span>
+            <span className="mdc-button__label">ENABLE WEBCAM</span>
+          </button>
+          <div
+            style={{
+              position: "relative",
+            }}
+          >
+            <video
+              ref={webcamRef}
+              id="webcam"
+              style={{ position: "absolute" }}
+              autoPlay
+              playsInline
+            ></video>
+            <canvas
+              ref={canvasRef}
+              className="output_canvas"
+              id="output_canvas"
+              style={{ position: "absolute", left: "0px", top: "0px" }}
+            ></canvas>
+          </div>
+        </div>
+      </div>
+      <div
+        className="main-right"
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          width: "600px",
+        }}
+      >
+        <p
+          style={{
+            fontSize: "30px",
+            fontWeight: "bold",
+            marginBottom: "50px",
+            color: "#23ba76",
+          }}
+        >
+          Try some detection
+        </p>
       </div>
     </div>
   );
